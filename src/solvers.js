@@ -17,17 +17,21 @@ window.findNRooksSolution = function(n){
   var board = new Board({n:n});
 
   var matrix = board.attributes;
+  var origMat = _.extend({}, matrix);
   var currentRow = 0;
   var result = false;
   var depthFirstSearch = function(currentRow){
     if(currentRow > matrix.n - 1){
+      solution = matrix;
       return;
     }
     for(var i = 0; i < matrix.n; i++){
       board.togglePiece(currentRow, i);
-      if(!board.hasAnyColConflicts()){
+      if(!board.hasAnyRooksConflicts()){
         depthFirstSearch(currentRow+1);
-        return;
+        if (solution){
+          return;
+        }
       } else{
         board.togglePiece(currentRow, i);
       }
@@ -35,10 +39,13 @@ window.findNRooksSolution = function(n){
     return;
   };
   depthFirstSearch(0);
-  if (!board.hasAnyRooksConflicts()){
-    solution = matrix;
+  if (!solution){
+    solution = origMat;
+    console.log('No solution for ' + n + ' rooks:', JSON.stringify(solution));
   }
-  console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
+  else{
+    console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
+  }
   return solution;
 };
 
@@ -78,36 +85,41 @@ window.findNQueensSolution = function(n){
   var board = new Board({n:n});
 
   var matrix = board.attributes;
+  var origMat = _.extend({}, matrix);
   var currentRow = 0;
   var result = false;
   var depthFirstSearch = function(currentRow){
     if(currentRow > matrix.n - 1){
+      solution = matrix;
       return;
     }
     for(var i = 0; i < matrix.n; i++){
       board.togglePiece(currentRow, i);
       if(!board.hasAnyQueensConflicts()){
         depthFirstSearch(currentRow+1);
-        return;
-      } else{
-        board.togglePiece(currentRow, i);
+        if (solution){
+          return;
+        }
       }
+      board.togglePiece(currentRow, i);
     }
     return;
   };
   depthFirstSearch(0);
-  if (!board.hasAnyQueensConflicts()){
-    solution = matrix;
+  if (!solution){
+    solution = origMat;
+    console.log('No solution for ' + n + ' queens:', JSON.stringify(solution));
   }
-
-  console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
+  else{
+    console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
+  }
   return solution;
 };
 
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n){
-  var solutionCount = 0; //fixme
+  var solutionCount = 0;
   var board = new Board({n:n});
 
   var matrix = board.attributes;
@@ -129,7 +141,6 @@ window.countNQueensSolutions = function(n){
   };
   // debugger;
   depthFirstSearch(0);
-
   console.log('Number of solutions for ' + n + ' queens:', solutionCount);
   return solutionCount;
 };
